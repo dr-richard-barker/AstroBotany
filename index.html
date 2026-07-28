@@ -22,6 +22,11 @@
   .hubcard h3{margin:0 0 6px;font-size:1.02rem;color:var(--fg);letter-spacing:-.01em}
   .hubcard p{margin:0;color:var(--muted);font-size:.88rem;line-height:1.45;flex:1}
   .hubcard .go{color:var(--accent);font-weight:600;font-size:.82rem;margin-top:12px}
+  .subsec{margin:34px 0 0}
+  .subsec:first-of-type{margin-top:8px}
+  .subsec > h2{font-size:1.16rem;letter-spacing:-.01em;margin:0;display:flex;align-items:baseline;gap:10px}
+  .subsec > h2 .n{font-size:.72rem;font-weight:600;color:var(--muted);letter-spacing:.02em}
+  .subsec > .blurb{margin:5px 0 0;color:var(--muted);font-size:.9rem;line-height:1.45}
 </style>
 </head>
 <body>
@@ -40,11 +45,7 @@
 </header>
 
 <section>
-  <div class="wrap">
-    <h2>Projects</h2>
-    <p class="sub">Nine plant space-biology projects — analyses, tools, crop experiments and education.</p>
-    <div id="grid" class="hubgrid"></div>
-  </div>
+  <div class="wrap" id="hub"></div>
 </section>
 
 <footer>
@@ -58,16 +59,25 @@
 <script src="https://dr-richard-barker.github.io/Plant_response_to_radiation/cose/sites.js"></script>
 <script>
 (function(){
-  var ORDER = ["arabidopsis-spaceflight-omics","APEX05_results_and_code","TICTOC",
-    "Tropism_autodecoder_2026","Plant_response_to_radiation","B_rappa_LLGCSS",
-    "smallRNAseq-DREAM","osdr-plant-microbiome","veg05-integrated-omics",
-    "madwest-astrobotany","AIRI"];
-  var reg = window.BARKER_SITES, grid = document.getElementById("grid");
-  if(!reg || !reg.groups || !grid) return;
+  // Cards grouped into four sub-sections. Every id here is part of the
+  // astrobotany scope (sites.js reg.scopes.astrobotany) — 11 projects total.
+  var SECTIONS = [
+    { name:"Analyses", blurb:"Spaceflight & radiation transcriptomics / multi-omics studies.",
+      ids:["Plant_response_to_radiation","arabidopsis-spaceflight-omics","APEX05_results_and_code",
+           "B_rappa_LLGCSS","osdr-plant-microbiome"] },
+    { name:"Crops", blurb:"Crop plants grown and studied in spaceflight conditions.",
+      ids:["veg05-integrated-omics","TICTOC"] },
+    { name:"Tools", blurb:"Interactive decoders & reusable analysis pipelines.",
+      ids:["Tropism_autodecoder_2026","smallRNAseq-DREAM"] },
+    { name:"Education", blurb:"Courses & classroom-facing astrobotany outreach.",
+      ids:["AIRI","madwest-astrobotany"] }
+  ];
+  var reg = window.BARKER_SITES, hub = document.getElementById("hub");
+  if(!reg || !reg.groups || !hub) return;
   var byId = {};
   reg.groups.forEach(function(g){ g.items.forEach(function(it){ byId[it.id] = it; }); });
-  ORDER.forEach(function(id){
-    var it = byId[id]; if(!it || !it.url) return;
+  function card(id){
+    var it = byId[id]; if(!it || !it.url) return null;
     var a = document.createElement("a"); a.className = "hubcard"; a.href = it.url + (it.url.indexOf("?")>=0?"&":"?") + "cose_scope=astrobotany";
     var img = document.createElement("img"); img.className = "thumb"; img.alt = ""; img.loading = "lazy";
     img.src = "https://dr-richard-barker.github.io/Plant_response_to_radiation/cose/thumbs/" + id + ".svg?v=3";
@@ -76,7 +86,21 @@
     var h = document.createElement("h3"); h.textContent = (it.emoji ? it.emoji + " " : "") + it.title; a.appendChild(h);
     if(it.desc){ var p = document.createElement("p"); p.textContent = it.desc; a.appendChild(p); }
     var go = document.createElement("span"); go.className = "go"; go.textContent = "Open →"; a.appendChild(go);
-    grid.appendChild(a);
+    return a;
+  }
+  SECTIONS.forEach(function(sec){
+    var cards = sec.ids.map(card).filter(Boolean);
+    if(!cards.length) return;
+    var wrap = document.createElement("div"); wrap.className = "subsec";
+    var h = document.createElement("h2");
+    h.appendChild(document.createTextNode(sec.name));
+    var n = document.createElement("span"); n.className = "n"; n.textContent = cards.length + (cards.length===1?" project":" projects");
+    h.appendChild(n); wrap.appendChild(h);
+    if(sec.blurb){ var b = document.createElement("p"); b.className = "blurb"; b.textContent = sec.blurb; wrap.appendChild(b); }
+    var grid = document.createElement("div"); grid.className = "hubgrid";
+    cards.forEach(function(c){ grid.appendChild(c); });
+    wrap.appendChild(grid);
+    hub.appendChild(wrap);
   });
 })();
 </script>
