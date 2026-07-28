@@ -67,7 +67,7 @@
   reg.groups.forEach(function(g){ g.items.forEach(function(it){ byId[it.id] = it; }); });
   ORDER.forEach(function(id){
     var it = byId[id]; if(!it || !it.url) return;
-    var a = document.createElement("a"); a.className = "hubcard"; a.href = it.url;
+    var a = document.createElement("a"); a.className = "hubcard"; a.href = it.url + (it.url.indexOf("?")>=0?"&":"?") + "cose_scope=astrobotany";
     var img = document.createElement("img"); img.className = "thumb"; img.alt = ""; img.loading = "lazy";
     img.src = "https://dr-richard-barker.github.io/Plant_response_to_radiation/cose/thumbs/" + id + ".svg?v=3";
     img.onerror = function(){ img.remove(); };
