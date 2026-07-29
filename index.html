@@ -59,26 +59,23 @@
 <script src="https://dr-richard-barker.github.io/Plant_response_to_radiation/cose/sites.js"></script>
 <script>
 (function(){
-  // Cards grouped into four sub-sections. Every id here is part of the
-  // astrobotany scope (sites.js reg.scopes.astrobotany) — 11 projects total.
-  var SECTIONS = [
-    { name:"Analyses", blurb:"Spaceflight & radiation transcriptomics / multi-omics studies.",
-      ids:["Plant_response_to_radiation","arabidopsis-spaceflight-omics","APEX05_results_and_code",
-           "B_rappa_LLGCSS","osdr-plant-microbiome"] },
-    { name:"Crops", blurb:"Crop plants grown and studied in spaceflight conditions.",
-      ids:["veg05-integrated-omics","TICTOC"] },
-    { name:"Tools", blurb:"Interactive decoders, simulators & reusable analysis pipelines.",
-      ids:["Tropism_autodecoder_2026","Seed_sowing_simulator","smallRNAseq-DREAM"] },
-    { name:"Education", blurb:"Courses & classroom-facing astrobotany outreach.",
-      ids:["AIRI","madwest-astrobotany"] }
-  ];
+  // Sub-sections come from the shared registry scope
+  // (sites.js reg.scopes.astrobotany.sections) — the single source of truth, so
+  // this hub and the in-page rail can never drift. Add/re-group a project in
+  // sites.js only.
+  var SCOPE = "astrobotany";
   var reg = window.BARKER_SITES, hub = document.getElementById("hub");
   if(!reg || !reg.groups || !hub) return;
+  var scope = reg.scopes && reg.scopes[SCOPE];
+  // Prefer the registry's grouped sections; fall back to a single flat list from
+  // the scope ids so a briefly-cached older sites.js still renders (never blank).
+  var SECTIONS = (scope && scope.sections)
+    || (scope && scope.ids ? [{ name:"Projects", ids:scope.ids }] : []);
   var byId = {};
   reg.groups.forEach(function(g){ g.items.forEach(function(it){ byId[it.id] = it; }); });
   function card(id){
     var it = byId[id]; if(!it || !it.url) return null;
-    var a = document.createElement("a"); a.className = "hubcard"; a.href = it.url + (it.url.indexOf("?")>=0?"&":"?") + "cose_scope=astrobotany";
+    var a = document.createElement("a"); a.className = "hubcard"; a.href = it.url + (it.url.indexOf("?")>=0?"&":"?") + "cose_scope=" + SCOPE;
     var img = document.createElement("img"); img.className = "thumb"; img.alt = ""; img.loading = "lazy";
     img.src = "https://dr-richard-barker.github.io/Plant_response_to_radiation/cose/thumbs/" + id + ".svg?v=4";
     img.onerror = function(){ img.remove(); };
